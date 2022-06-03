@@ -1,21 +1,27 @@
+
 %{
-#include “myparser.tab.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "y.tab.h"
 %}
 
-%%
+%option noyywrap
+%option yylineno
 
-underscore "_"
 digit [0-9]
+number {digit}+
+float {number}+"."{number}
 letter [a-zA-Z]
-chartype "CHAR"
-inttype "INTEGER"
-userdatatype "Node"
-comparative ">"|"<"|"=="|"!="
-char .
-datatype {chartype}|{inttype}
+word {letter}+
 
+
+%%
+[ ] ;
+[\t] ;
+[\n] {return NEWLINE;};
+
+{number} 	{ yylval = atoi(yytext); return INT; }
+{float}			{ return FLOAT; }
+{word}  {return TEXT;}
 %%
