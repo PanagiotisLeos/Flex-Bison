@@ -1,0 +1,32 @@
+<last> :: = <gameid> <drawid> <drawtime> <status> <drawBreak> <visualDraw> <pricePoints>
+
+<gameid>:: = <INT>
+<drawid> :: = <INT>
+<drawtime> :: = <INT>
+<status> :: = <TEXT>
+<drawBreak> :: = <INT>
+<visualDraw> :: = <INT>
+<pricePoints> :: = <amount>
+<amount> :: = <INT>|<FLOAT>
+<winningNumbers>
+<prizeCategories>
+<wagerStatistics>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<winningNumbers> <prizeCategories> <wagerStatistics>
+<winningNumbers> :: = <list> <bonus>
+<active> :: = <gameid> <drawid> <drawtime> <status> <drawBreak> <visualDraw> <pricePoints> <winningNumbers> <prizeCategories> <wagerStatistics>
+<prizeCategories> :: = <id> <divident> <winners> <distributed> <jackpot> <fixed> <categoryType> <gameType> <minimumDistributed>
+<wagerStatistics> :: = <columns> <wagers> <addOn>
