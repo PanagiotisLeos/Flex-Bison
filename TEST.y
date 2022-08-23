@@ -36,9 +36,9 @@ double decimal;
 %token <decimal> DECIMAL;
 %token <int> INT;
 %token <ival> NUMBER;
-%token <ival> FLOAT;
 %token <sval> TEXT
 
+%token LAST
 %token GAMEID;
 %token DRAWID
 %token DRAWTIME
@@ -52,64 +52,63 @@ double decimal;
 %token BONUS
 %token PRIZECAT
 
+
 %start json
 
 %%
 
-json:
-    | value
-    ;
-
-value: object
-     | DECIMAL
-     | array
-     | VTRUE
-     | VFALSE
-     | VNULL
-     | NUMBER
-     | FLOAT
-     ;
-
-object: LCURLY RCURLY
-      | LCURLY members RCURLY
-      ;
-
-members: member
-       | members COMMA member
-       ;
-
-
-member: gameid | drawid | drawtime | status | drawbreak | visualdraw ;
-      ;
-
-gameid: GAMEID COLON INT
-      | GAMEID COLON object;
-
-drawid: DRAWID COLON INT
-      | DRAWID COLON object
-      ;
-
-drawtime: DRAWTIME COLON INT
-        | DRAWTIME COLON object
+    json:
+        | value
         ;
 
-status: STATUS COLON STRING ;
-      | STATUS COLON object
+    value: object
+         | STRING
+         | DECIMAL
+         | array
+         | VTRUE
+         | VFALSE
+         | VNULL
+         ;
 
-drawbreak: DRAWBREAK COLON INT | DRAWBREAK COLON object;
+    object: LCURLY RCURLY
+          | LCURLY members RCURLY
+          ;
 
-visualdraw: VISUALDRAW COLON INT | VISUALDRAW COLON object ;
+    members: member
+           | members COMMA member
+           ;
+
+    member: STRING COLON value
+          ;
+
+    array: LBRAC RBRAC
+         | LBRAC values RBRAC
+         ;
+
+    values: value
+          | values COMMA value
+          ;
 
 
 
 
-array: LBRAC RBRAC
-     | LBRAC values RBRAC
-     ;
 
-values: value
-      | values COMMA value
-      ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 %%
 
