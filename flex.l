@@ -1,55 +1,107 @@
-
 %{
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include "y.tab.h"
+int n;
 %}
 
 %option noyywrap
 %option yylineno
 
-EXP ([Ee][-+]?[0-9]+)
+DIGIT [0-9]
+DIGITS 		{DIGIT}+
+HEXS [0-9a-f]
 
+
+ALL_CHARS [ -!#-\[\]-~]
+ESC_CHARS \\["\\bfnrt/]
+
+UNCD \\u{HEXS}{HEXS}{HEXS}{HEXS}
+CHAR {ALL_CHARS}|{ESC_CHARS}|{UNCD}
+
+CHARS_A {CHAR}+
 %%
 
-"{" { ECHO; return LCURLY; }
-"}" { ECHO; return RCURLY; }
-"[" { ECHO; return LBRAC; }
-"]" { ECHO; return RBRAC; }
-"," { ECHO; return COMMA; }
-":" { ECHO; return COLON; }
 
-""drawId"" return DRAWID;
-"drawTime" return DRAWTIME;
-"status" return STATUS;
-"drawBreak" return DRAWBREAK;
-"visualDraw" return VISUALDRAW;
-"pricePoints" return PRICEPOINTS ;
-"amount" return AMOUNT;
-"winningNumbers" return WINNINGNUMBERS ;
-"list" return LIST ;
-"bonus" return BONUS ;
-"prizeCategories" return PRIZECAT ;
+\"last\"                return LAST;
+\"active\"              return ACTIVE;
+\"gameId\"              return GAMEID;
+\"drawId\"              return DRAWID;
+\"drawTime\"            return DRAWTIME;
+\"status\"				      return STATUS;
+\"drawBreak\"			      return DRAWBREAK;
+\"visualDraw\"		      return VISUALDRAW;
+\"pricePoints\"		      return PRICEPOINTS;
+\"amount\"			        return AMOUNT;
+\"winningNumbers\"		  return WINNINGNUMBERS;
+\"list\"		          	return LIST;
+\"bonus\"		          	return BONUS;
+\"prizeCategories\"			 return PRIZECATEGORIES;
+\"id\"			             return ID;
+\"divident\"			       return DIVIDENT;
+\"winners\"		         	 return WINNERS;
+\"distributed\"		     	 return DISTRIBUTED;
+\"jackpot\"		         	 return JACKPOT;
+\"fixed\"		           	 return FIXED;
+\"categoryType\"		  	 return CATEGORYTYPE;
+\"gameType\"			       return GAMETYPE;
+\"minimumDistributed\"	 return MINIMUMDISTRIBUTED;
+\"wagerStatistics\"	     return WAGERSTATISTICS;
+\"columns\"	             return COLUMNS;
+\"wagers\"	             return WAGERS;
+\"addOn\"	               return ADDON;
+\"content\"	             return CONTENT;
+\"totalPages\"	         return TOTALPAGES;
+\"totalElements\"	       return TOTALELEMENTS;
+\"numberOfElements\"	   return NUMBEROFELEMENTS;
+\"sort\"	               return SORT;
+\"first\"	               return FIRST;
+\"size\"	               return SIZE;
+\"number\"	             return NUMBER;
+\"direction\"	           return DIRECTION;
+\"property\"	           return PROPERTY;
+\"ignoreCase\"	         return IGNORECASE;
+\"nullHandling\"	       return NULLHANDLING;
+\"descending\"	         return DESCENDING;
+\"ascending\"	           return ASCENDING;
+true                      return BOOLEAN;
+false                     return BOOLEAN;
 
 
 
-"true" { ECHO; return VTRUE; }
-"false" { ECHO; return VFALSE; }
-"null" { ECHO; return VNULL; }
-"gameId" return GAMEID;
 
 
-%%
+\{		{return '{';}
 
-/* [ \t\r\n]+     { /* eat whitespace */ } */
-\"[^"]*\"         { yylval.string = strdup(yytext); ECHO; return STRING; }
-[a-zA-Z_]+ 				{yylval.sval = yytext; return TEXT;}
-[1-9]+\.?[0-9]*{EXP}? { ECHO; yylval.decimal = atof(yytext); return DECIMAL; }
-"-"[0-9][0-9]* 				{yylval.ival = atol(yytext); return NUMBER; }
-[0-9]*.[0-9]*         {yylval.ival = atol(yytext); return FLOAT; }
+\}		{ return '}';}
+
+\[		{return '[';}
+
+\]		{ return ']';}
+
+\"		{ return QUOT;}
+
+,		{ return ',';}
+
+:		{ return ':';}
 
 
 
 
-%%
+
+\"{DIGITS}\"	{	return STR_NUMBER; }
+
+\"{CHARS_A}\"		{ return STRING; }
+
+
+{DIGITS}			{ return INT_NUMBER; }
+
+{DIGITS}"."{DIGITS}			{ return FLOAT; }
+
+
+
+
+\n  ;
+[ ] 	;
+[\t] 	;
