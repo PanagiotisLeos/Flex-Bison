@@ -87,7 +87,7 @@ false                     return BOOLEAN;
 :		{ return ':';}
 
 
-
+%%
 
 
 \"{DIGITS}\"	{	return STR_NUMBER; }
