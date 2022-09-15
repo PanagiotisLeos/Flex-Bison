@@ -3,113 +3,211 @@
 #include <string.h>
 #include <stdlib.h>
 
+FILE *yyin;
 int yylex();
-
-void yyerror(const char *t);
-
-extern char* yytext();
-
+void yyerror(const char *s);
+extern char* yytext;
 extern int yylineno;
-
 extern FILE *yyin;
 extern FILE *yyout;
+
+
+
 %}
 
-
-%locations
-
-%union{
-int ival;
-float fval;
-char *sval;
-char *string;
-double decimal;
-}
-
-
-
-
-%token LCURLY RCURLY LBRAC RBRAC COMMA COLON QUOTE
-%token VTRUE VFALSE VNULL
-%token <string> STRING;
-
-%token <decimal> DECIMAL;
-%token <int> INT;
-%token <ival> NUMBER;
-%token <ival> FLOAT;
-%token <sval> TEXT
-
-%token GAMEID;
+%token QUOT
+%token STRING
+%token STRING_PR
+%token INT_NUMBER
+%token FLOAT
+%token BOOLEAN
+%token TEXT_LEX
+%token STR_NUMBER
+%token LAST
+%token ACTIVE
+%token GAMEID
 %token DRAWID
 %token DRAWTIME
-%token STATUS
 %token DRAWBREAK
+%token STATUS
 %token VISUALDRAW
 %token PRICEPOINTS
 %token AMOUNT
 %token WINNINGNUMBERS
 %token LIST
+%token ID
 %token BONUS
-%token PRIZECAT
+%token PRIZECATEGORIES
+%token DIVIDENT
+%token WINNERS
+%token DISTRIBUTED
+%token JACKPOT
+%token FIXED
+%token CATEGORYTYPE
+%token GAMETYPE
+%token MINIMUMDISTRIBUTED
+%token WAGERSTATISTICS
+%token WAGERS
+%token COLUMNS
+%token ADDON
+%token CONTENT
+%token TOTALPAGES
+%token TOTALELEMENTS
+%token LAST_R
+%token NUMBEROFELEMENTS
+%token SORT
+%token FIRST
+%token SIZE
+%token NUMBER
+%token DIRECTION
+%token PROPERTY
+%token IGNORECASE
+%token NULLHANDLING
+%token DESCENDING
+%token ASCENDING
 
-%start json
+
+
 
 %%
+json: '{' jsn '}' ;
 
-json:
-    | value
-    ;
+jsn: commands | jsn ',' commands;
 
-value: object
-     | DECIMAL
-     | array
-     | VTRUE
-     | VFALSE
-     | VNULL
-     | NUMBER
-     | FLOAT
-     ;
+commands: last ',' active | range_resutls ;
 
-object: LCURLY RCURLY
-      | LCURLY members RCURLY
-      ;
+last: LAST ':' '{' last_jsn '}' ;
 
-members: member
-       | members COMMA member
-       ;
+last_jsn: last_parts | last_jsn ',' last_parts;
+
+last_parts: gameId | drawId | drawTime | status | drawBreak | visualDraw | pricePoints
+| amount | winningNumbers  | prizeCategories | wagerStatistics;
+
+active: ACTIVE ':' '{' active_jsn '}' ;
+
+active_jsn: active_parts | active_jsn ',' active_parts;
+
+active_parts: gameId | drawId | drawTime | status | drawBreak | visualDraw | pricePoints
+| amount | prizeCategories | wagerStatistics ;
+
+gameId: GAMEID ':' INT_NUMBER ;
+
+drawId: DRAWID ':' INT_NUMBER ;
+
+drawTime: DRAWTIME ':' INT_NUMBER ;
+
+status: STATUS ':' STRING | STATUS ':' ACTIVE ;
+
+drawBreak: DRAWBREAK ':' INT_NUMBER ;
+
+visualDraw: VISUALDRAW ':' INT_NUMBER ;
+
+pricePoints: PRICEPOINTS ':' '{' amount '}' ;
+
+amount: AMOUNT ':' FLOAT ;
+
+winningNumbers: WINNINGNUMBERS ':' '{' list ',' bonus '}'
+
+list: LIST ':' int_array ;
+
+bonus: BONUS ':' int_array ;
+
+int_array: '[' nums ']' ;
+
+nums: INT_NUMBER | nums ',' INT_NUMBER;
+
+wagerStatistics: WAGERSTATISTICS ':' '{' wager_members '}' ;
+
+wager_members: columns ',' wagers ',' addOn ;
+
+columns: COLUMNS ':' INT_NUMBER ;
+
+wagers: WAGERS ':' INT_NUMBER ;
+
+addOn: ADDON ':' addon_array ;
+
+addon_array: '[' ']' ;
 
 
-member: gameid | drawid | drawtime | status | drawbreak | visualdraw ;
-      ;
+prizeCategories: PRIZECATEGORIES ':' prize_array ;
 
-gameid: GAMEID COLON INT
-      | GAMEID COLON object;
+prize_array: '['  prize_objects  ']' | '[' ']';
 
-drawid: DRAWID COLON INT
-      | DRAWID COLON object
-      ;
+prize_objects: '{' prize_jsn '}' | '{' prize_jsn '}' ',' prize_objects ;
 
-drawtime: DRAWTIME COLON INT
-        | DRAWTIME COLON object
-        ;
+prize_jsn: prize_parts | prize_jsn ',' prize_parts;
 
-status: STATUS COLON STRING ;
-      | STATUS COLON object
+prize_parts: id | divident | winners | distributed | jackpot | fixed | categoryType | gameType | minimumDistributed ;
 
-drawbreak: DRAWBREAK COLON INT | DRAWBREAK COLON object;
+id: ID ':' INT_NUMBER ;
 
-visualdraw: VISUALDRAW COLON INT | VISUALDRAW COLON object ;
+divident: DIVIDENT ':' FLOAT ;
+
+winners: WINNERS ':' INT_NUMBER ;
+
+distributed: DISTRIBUTED ':' FLOAT;
+
+jackpot: JACKPOT ':' FLOAT ;
+
+fixed: FIXED ':' FLOAT ;
+
+categoryType: CATEGORYTYPE ':' INT_NUMBER ;
+
+gameType: GAMETYPE ':' STRING ;
+
+minimumDistributed: MINIMUMDISTRIBUTED ':' FLOAT;
+
+
+
+range_resutls: content ','  totalPages ',' totalElements ',' last_r ',' numberOfElements ',' sort ',' first ',' size ',' number ;
 
 
 
 
-array: LBRAC RBRAC
-     | LBRAC values RBRAC
-     ;
+content: CONTENT ':' '['  content_parts  ']' ;
 
-values: value
-      | values COMMA value
-      ;
+content_parts: '{' last_jsn '}' |  content_parts ',' '{' last_jsn '}' ;
+
+totalPages: TOTALPAGES ':' INT_NUMBER ;
+
+totalElements: TOTALELEMENTS ':' INT_NUMBER ;
+
+last_r: LAST ':' BOOLEAN;
+
+numberOfElements : NUMBEROFELEMENTS ':' INT_NUMBER;
+
+sort: SORT ':'  sort_array
+
+sort_array: '[' '{' sort_parts '}' ']'
+
+sort_parts: direction ',' property ',' ignoreCase ',' nullHandling ',' descending ',' ascending  ;
+
+direction: DIRECTION ':' STRING ;
+
+property: PROPERTY ':' STRING;
+
+ignoreCase: IGNORECASE ':' BOOLEAN ;
+
+nullHandling: NULLHANDLING ':' STRING ;
+
+descending: DESCENDING ':' BOOLEAN ;
+
+ascending: ASCENDING ':' BOOLEAN ;
+
+first: FIRST ':' BOOLEAN ;
+
+size: SIZE ':' INT_NUMBER ;
+
+number: NUMBER ':' INT_NUMBER ;
+
+
+
+
+
+
+
+
+
 
 %%
 
@@ -117,6 +215,8 @@ void yyerror(const char *t) {
 
 	fprintf(stderr, "Error in line %d\n", yylineno);
 }
+
+
 
 /*Main*/
 int main(int argc, char* argv[]) {
