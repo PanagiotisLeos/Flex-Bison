@@ -100,8 +100,8 @@ false                     return BOOLEAN;
 {DIGITS}"."{DIGITS}			{ return FLOAT; }
 
 
-
 \n  ;
 [ ] 	;
 [\t] 	;
 
+%%
